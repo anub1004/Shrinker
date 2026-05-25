@@ -51,10 +51,10 @@ interface AlertProps {
 
 export const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
   const typeStyles = {
-    success: 'bg-green-50 text-green-800 border-green-200',
-    error: 'bg-red-50 text-red-800 border-red-200',
-    info: 'bg-blue-50 text-blue-800 border-blue-200',
-    warning: 'bg-yellow-50 text-yellow-800 border-yellow-200',
+    success: 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800',
+    error: 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800',
+    info: 'bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    warning: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800',
   };
 
   const icons = {
@@ -65,7 +65,7 @@ export const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
   };
 
   return (
-    <div className={clsx('border rounded-lg p-4 flex items-center gap-3', typeStyles[type])}>
+    <div className={clsx('border rounded p-4 flex items-center gap-3', typeStyles[type])}>
       <span className="text-xl">{icons[type]}</span>
       <p className="flex-1 text-sm font-medium">{message}</p>
       {onClose && (
@@ -111,10 +111,10 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ variant = 'primary', children }) => {
   const variants = {
-    primary: 'bg-blue-100 text-blue-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    danger: 'bg-red-100 text-red-800',
+    primary: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300',
+    success: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
+    warning: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300',
+    danger: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
   };
 
   return <span className={clsx('px-3 py-1 rounded-full text-xs font-medium', variants[variant])}>{children}</span>;

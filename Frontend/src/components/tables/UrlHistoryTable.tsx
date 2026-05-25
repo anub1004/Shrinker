@@ -1,7 +1,7 @@
 import React from 'react'
 import type { UrlHistory } from '../../types'
-import { Button, Badge } from '../common'
-import { formatDate, isUrlExpired, timeUntilExpiry, copyToClipboard } from '../../utils'
+import { Badge } from '../common'
+import { formatDate, isUrlExpired, timeUntilExpiry } from '../../utils'
 
 interface UrlHistoryTableProps {
   urls: UrlHistory[]
@@ -20,7 +20,7 @@ export const UrlHistoryTable: React.FC<UrlHistoryTableProps> = ({
     return (
       <div className="space-y-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-gray-200 h-16 rounded-lg animate-pulse" />
+          <div key={i} className="bg-gray-200 dark:bg-gray-800 h-12 rounded animate-pulse" />
         ))}
       </div>
     )
@@ -28,43 +28,42 @@ export const UrlHistoryTable: React.FC<UrlHistoryTableProps> = ({
 
   if (urls.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-        <p className="text-gray-500 text-lg mb-2">No URLs shortened yet</p>
-        <p className="text-gray-400 text-sm">Start by shortening your first URL above!</p>
+      <div className="bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-700 rounded p-8 text-center">
+        <p className="text-gray-600 dark:text-gray-400 text-sm">No URLs shortened yet</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-gray-950 border border-gray-300 dark:border-gray-700 rounded overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Short URL</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Original URL</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Expires</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Created</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Short</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Original</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Expires</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Created</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-400 uppercase tracking-wide">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-300 dark:divide-gray-700">
             {urls.map((url) => {
               const isExpired = isUrlExpired(url.expiresAt)
               return (
-                <tr key={url.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-mono text-blue-600">
+                <tr key={url.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/50">
+                  <td className="px-6 py-4 text-sm font-mono text-gray-700 dark:text-gray-300">
                     <a
                       href={url.shortUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:underline"
+                      className="hover:text-black dark:hover:text-white transition"
                     >
                       {url.shortCode}
                     </a>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     <div className="max-w-xs truncate" title={url.longUrl}>
                       {url.longUrl}
                     </div>
@@ -76,28 +75,26 @@ export const UrlHistoryTable: React.FC<UrlHistoryTableProps> = ({
                       <Badge variant="success">Active</Badge>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {!isExpired ? timeUntilExpiry(url.expiresAt) : 'Expired'}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                     {formatDate(url.createdAt)}
                   </td>
                   <td className="px-6 py-4 text-sm space-x-2">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => copyToClipboard(url.shortUrl)}
+                    <button
+                      onClick={() => onCopy?.(url.shortUrl)}
+                      className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded transition"
                     >
-                      📋 Copy
-                    </Button>
+                      Copy
+                    </button>
                     {onDelete && (
-                      <Button
-                        variant="danger"
-                        size="sm"
+                      <button
                         onClick={() => onDelete(url.id)}
+                        className="text-xs bg-gray-100 dark:bg-gray-800 hover:bg-red-100 dark:hover:bg-red-900/20 text-gray-700 dark:text-gray-300 px-3 py-1 rounded transition"
                       >
-                        🗑️ Delete
-                      </Button>
+                        Delete
+                      </button>
                     )}
                   </td>
                 </tr>

@@ -4,23 +4,14 @@ import { shortenUrl, clearError, clearSuccessMessage, deleteUrl, clearHistory } 
 import { useShortenState } from '../hooks/useRedux'
 import { ShortenUrlForm } from '../components/forms/ShortenUrlForm'
 import { UrlHistoryTable } from '../components/tables/UrlHistoryTable'
-import { Card, Button, Alert } from '../components/common'
 import type { ShortenUrlFormData } from '../utils/validation'
 
-interface StatsCardProps {
-  title: string
-  value: string | number
-  icon: string
-  description?: string
-}
-
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, description }) => (
-  <Card className="text-center">
-    <div className="text-4xl mb-2">{icon}</div>
-    <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-    <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-    {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
-  </Card>
+const FeatureCard: React.FC<{ number: string; title: string; description: string }> = ({ number, title, description }) => (
+  <div className="text-sm border border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
+    <p className="text-xs text-gray-500 dark:text-gray-600 mb-2">{number}</p>
+    <h4 className="font-semibold text-black dark:text-white mb-1">{title}</h4>
+    <p className="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">{description}</p>
+  </div>
 )
 
 export const HomePage: React.FC = () => {
@@ -50,115 +41,94 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  const activeUrls = urls.filter(u => !new Date(u.expiresAt).getTime() < Date.now())
-  const expiredUrls = urls.filter(u => new Date(u.expiresAt).getTime() < Date.now())
-
   return (
-    <div className="space-y-8">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
-          Shorten Your URLs, Track Your Links
-        </h2>
-        <p className="text-xl text-gray-600">
-          Create short, shareable links instantly. Simple, fast, and reliable.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatsCard
-          title="Total URLs Shortened"
-          value={urls.length}
-          icon="🔗"
-          description="Across all time"
-        />
-        <StatsCard
-          title="Active Links"
-          value={activeUrls.length}
-          icon="✅"
-          description="Ready to use"
-        />
-        <StatsCard
-          title="Expired Links"
-          value={expiredUrls.length}
-          icon="⏰"
-          description="No longer active"
-        />
-      </div>
-
-      <Card className="border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50">
-        <div className="mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">Shorten a URL</h3>
-          <p className="text-gray-600 text-sm mt-1">Paste your long URL below to create a short link</p>
+    <div className="flex flex-col gap-16">
+      <div className="container-card max-w-2xl mx-auto w-full">
+        <div className="text-center mb-10">
+          <div className="text-xs text-gray-600 dark:text-gray-500 uppercase tracking-widest mb-6 border border-gray-300 dark:border-gray-700 inline-block px-3 py-1 rounded">
+            URL Shortener
+          </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-black dark:text-white mb-4 leading-tight">
+            Make it<br /><span className="text-gray-500 dark:text-gray-600">shorter.</span>
+          </h2>
+          <p className="text-gray-700 dark:text-gray-400 text-base max-w-lg mx-auto">
+            Paste your long URL. Get a clean short link. No sign-up.
+          </p>
         </div>
-        <ShortenUrlForm
-          onSubmit={handleShortenUrl}
-          loading={loading}
-          error={error || ''}
-          successMessage={successMessage || ''}
-          onErrorClear={() => dispatch(clearError())}
-          onSuccessClear={() => dispatch(clearSuccessMessage())}
-        />
-      </Card>
 
-      {lastShortenedUrl && (
-        <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">✅ URL Successfully Shortened!</h4>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Short URL</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={lastShortenedUrl.shortUrl}
-                  readOnly
-                  className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg font-mono text-sm"
-                />
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => handleCopy(lastShortenedUrl.shortUrl)}
-                >
-                  {copiedId === lastShortenedUrl.shortUrl ? '✓ Copied!' : '📋 Copy'}
-                </Button>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Original URL</label>
+        <div className="mb-6">
+          <ShortenUrlForm
+            onSubmit={handleShortenUrl}
+            loading={loading}
+            error={error || ''}
+            successMessage={successMessage || ''}
+            onErrorClear={() => dispatch(clearError())}
+            onSuccessClear={() => dispatch(clearSuccessMessage())}
+          />
+        </div>
+
+        {lastShortenedUrl && (
+          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded p-4 mt-6">
+            <div className="flex gap-2">
               <input
                 type="text"
-                value={lastShortenedUrl.longUrl}
+                value={lastShortenedUrl.shortUrl}
                 readOnly
-                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm"
+                className="input-base flex-1 font-mono text-sm"
               />
+              <button
+                onClick={() => handleCopy(lastShortenedUrl.shortUrl)}
+                className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-medium hover:opacity-90 transition"
+              >
+                {copiedId === lastShortenedUrl.shortUrl ? '✓ Copied' : 'Copy'}
+              </button>
             </div>
           </div>
-        </Card>
-      )}
+        )}
+      </div>
 
-      <div>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">URL History</h3>
-          {urls.length > 0 && (
-            <Button
-              variant="secondary"
-              size="sm"
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-2 border-gray-300  border-solid rounded-md p-4
+      dark:border-gray-700 pt-12">
+        <FeatureCard
+          number="01"
+          title="Lightning fast"
+          description="Powered by Redis cache - repeated visits redirect in under a millisecond."
+        />
+        <FeatureCard
+          number="02"
+          title="Custom links"
+          description="Choose your own short code instead of a random one - make it memorable."
+        />
+        <FeatureCard
+          number="03"
+          title="Auto-expiring"
+          description="Set an expiry on any link stage online. Expired links show a 'link expired' page."
+        />
+      </div>
+
+      {urls.length > 0 && (
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold">Your Links</h3>
+            <button
               onClick={() => {
-                if (window.confirm('Are you sure you want to clear all history?')) {
+                if (window.confirm('Clear all history?')) {
                   dispatch(clearHistory())
                 }
               }}
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition"
             >
-              🗑️ Clear History
-            </Button>
-          )}
+              Clear
+            </button>
+          </div>
+          <UrlHistoryTable
+            urls={urls}
+            loading={false}
+            onDelete={handleDeleteUrl}
+            onCopy={handleCopy}
+          />
         </div>
-        <UrlHistoryTable
-          urls={urls}
-          loading={false}
-          onDelete={handleDeleteUrl}
-          onCopy={handleCopy}
-        />
-      </div>
+      )}
     </div>
   )
 }
