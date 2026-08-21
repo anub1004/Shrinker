@@ -2,7 +2,7 @@
 
 A modern, production-ready URL shortening service built with React + TypeScript on the frontend and Spring Boot on the backend. Shrinker provides fast, reliable URL shortening with custom codes, expiration dates, and Redis caching.
 
-**Live Demo:** https://shrink-chi.vercel.app
+**Live Demo:** https://shrinker-lac.vercel.app
 
 ---
 
@@ -779,7 +779,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👥 Author
 
 **Anubhav Singh**
-- GitHub: [@ankush-singh](https://github.com/anub1004)
+- GitHub: [@anubhav-singh](https://github.com/anub1004)
 - Email: anubhavsingh6260@gmail.com
 
 ---
