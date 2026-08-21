@@ -6,6 +6,7 @@ import com.ankush.shortener.model.Url;
 import com.ankush.shortener.repository.UrlRepository;
 import com.ankush.shortener.util.Base62Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlService {
@@ -60,14 +62,18 @@ public class UrlService {
 
     public String getOriginalUrl(String shortCode) {
 
-        // Check Redis cache first
-        String cachedUrl = redisTemplate.opsForValue().get(shortCode);
-        if (cachedUrl != null) {
-            System.out.println("CACHE HIT! Fetched from Redis: " + shortCode);
-            return cachedUrl;
+        // Check Redis cache first (gracefully skip if Redis is unavailable)
+        try {
+            String cachedUrl = redisTemplate.opsForValue().get(shortCode);
+            if (cachedUrl != null) {
+                log.info("CACHE HIT! Fetched from Redis: {}", shortCode);
+                return cachedUrl;
+            }
+        } catch (Exception e) {
+            log.warn("Redis unavailable, falling back to DB: {}", e.getMessage());
         }
 
-        System.out.println("CACHE MISS! Fetching from PostgreSQL: " + shortCode);
+        log.info("CACHE MISS! Fetching from PostgreSQL: {}", shortCode);
 
         // Fetch from DB
         Url url = urlRepository.findByShortCode(shortCode)
@@ -76,12 +82,20 @@ public class UrlService {
         // Check expiry
         if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(LocalDateTime.now())) {
             urlRepository.delete(url);
-            redisTemplate.delete(shortCode); // clean Redis too if somehow cached
+            try {
+                redisTemplate.delete(shortCode);
+            } catch (Exception e) {
+                log.warn("Redis unavailable during cache cleanup: {}", e.getMessage());
+            }
             throw new UrlExpiredException(shortCode);
         }
 
-        // Cache in Redis for 30 days
-        redisTemplate.opsForValue().set(shortCode, url.getLongUrl(), Duration.ofDays(30));
+        // Cache in Redis for 30 days (skip if Redis is unavailable)
+        try {
+            redisTemplate.opsForValue().set(shortCode, url.getLongUrl(), Duration.ofDays(30));
+        } catch (Exception e) {
+            log.warn("Redis unavailable, skipping cache: {}", e.getMessage());
+        }
 
         return url.getLongUrl();
     }
