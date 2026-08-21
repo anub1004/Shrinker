@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @RestController
 public class UrlController {
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:https://shrinker-0rq9.onrender.com}")
     private String baseUrl;
     private final UrlService urlService;
 
