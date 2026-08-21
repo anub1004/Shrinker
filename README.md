@@ -778,9 +778,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Author
 
-**Ankush Singh**
-- GitHub: [@ankush-singh](https://github.com/ankush-singh)
-- Email: your-email@example.com
+**Anubhav Singh**
+- GitHub: [@ankush-singh](https://github.com/anub1004)
+- Email: anubhavsingh6260@gmail.com
 
 ---
 
