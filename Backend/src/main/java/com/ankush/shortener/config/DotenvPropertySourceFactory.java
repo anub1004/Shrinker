@@ -14,9 +14,15 @@ public class DotenvPropertySourceFactory implements PropertySourceFactory {
 
     @Override
     public PropertySource<?> createPropertySource(String name, EncodedResource resource) throws IOException {
-        Dotenv dotenv = Dotenv.load();
         Map<String, Object> props = new HashMap<>();
-        dotenv.entries().forEach(entry -> props.put(entry.getKey(), entry.getValue()));
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .ignoreIfMissing()
+                    .load();
+            dotenv.entries().forEach(entry -> props.put(entry.getKey(), entry.getValue()));
+        } catch (Exception e) {
+            // .env not found — fall back to application.properties defaults
+        }
         return new MapPropertySource("dotenv", props);
     }
 }
